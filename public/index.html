@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1f4e79" />
+  <title>Comptage Palettes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Comptage Palettes</h1>
+    <span>
+      <span id="mode" class="badge"></span>
+      <button id="logout" class="logout" hidden>Quitter</button>
+    </span>
+  </header>
+
+  <!-- ===== Connexion ===== -->
+  <main id="login" class="tab">
+    <section class="card">
+      <h2>Connexion</h2>
+      <form id="loginForm">
+        <label>Code d'accès
+          <input id="code" type="password" inputmode="numeric" autocomplete="current-password" required />
+        </label>
+        <button class="primary" type="submit">Entrer</button>
+      </form>
+      <p id="loginError" class="status conf-faible"></p>
+    </section>
+  </main>
+
+  <nav id="nav" hidden>
+    <button data-tab="saisie" class="active">📷 Palette</button>
+    <button data-tab="bilan">📊 Bilan</button>
+    <button data-tab="reglages" id="tabReglages">⚙️ Réglages</button>
+  </nav>
+
+  <!-- ===== Saisie palette ===== -->
+  <main id="saisie" class="tab">
+    <section class="card">
+      <label>SKU <select id="sku"></select></label>
+      <div class="row">
+        <label>Opérateur <input id="operator" placeholder="Nom" /></label>
+        <label>Ligne <input id="line" placeholder="L1" /></label>
+      </div>
+      <label>N° de lot <input id="lot" placeholder="optionnel" /></label>
+    </section>
+
+    <section class="card">
+      <label class="photo-btn">
+        <input id="photo" type="file" accept="image/*" capture="environment" hidden />
+        <span>📷 Prendre la photo de la palette</span>
+      </label>
+      <p class="hint">Conseil : photo prise en hauteur, de biais, montrant le dessus et deux faces de la palette.</p>
+      <img id="preview" alt="" hidden />
+      <p id="status" class="status"></p>
+    </section>
+
+    <section id="result" class="card" hidden>
+      <h2>Résultat</h2>
+      <div id="aiDetail" class="ai"></div>
+      <label>Nombre de caisses (à valider)
+        <div class="stepper">
+          <button type="button" data-step="-1">−</button>
+          <input id="cases" type="number" inputmode="numeric" min="0" />
+          <button type="button" data-step="1">+</button>
+        </div>
+      </label>
+      <div class="row">
+        <button type="button" id="setFull" class="secondary">Palette pleine</button>
+        <button type="button" id="calc" class="secondary">Calcul couches</button>
+      </div>
+      <div id="calcBox" class="row" hidden>
+        <label>Couches pleines <input id="calcLayers" type="number" inputmode="numeric" min="0" /></label>
+        <label>Caisses couche du dessus <input id="calcTop" type="number" inputmode="numeric" min="0" /></label>
+      </div>
+      <button id="save" class="primary">✅ Valider la palette</button>
+    </section>
+
+    <button id="manual" class="link">Saisie manuelle sans photo</button>
+  </main>
+
+  <!-- ===== Bilan ===== -->
+  <main id="bilan" class="tab">
+    <section class="card">
+      <div class="row">
+        <label>Date <input id="date" type="date" /></label>
+        <a id="csv" class="button secondary" href="#">⬇️ Export Excel</a>
+      </div>
+      <div id="kpis" class="kpis"></div>
+      <table>
+        <thead><tr><th>SKU</th><th>Pal.</th><th>Pleines</th><th>Caisses</th></tr></thead>
+        <tbody id="reportBody"></tbody>
+        <tfoot id="reportFoot"></tfoot>
+      </table>
+    </section>
+    <section class="card">
+      <h2>Détail des palettes</h2>
+      <ul id="palletList" class="list"></ul>
+    </section>
+  </main>
+
+  <!-- ===== Réglages ===== -->
+  <main id="reglages" class="tab">
+    <section class="card">
+      <label>Caisses pour une palette pleine (100 %)
+        <input id="fullCases" type="number" inputmode="numeric" min="1" />
+      </label>
+      <button id="saveSettings" class="secondary">Enregistrer</button>
+    </section>
+    <section class="card">
+      <h2>SKU</h2>
+      <ul id="skuList" class="list"></ul>
+      <h3>Ajouter / modifier un SKU</h3>
+      <label>Code <input id="skuCode" placeholder="BRUME-100-ROSE" /></label>
+      <label>Désignation <input id="skuName" placeholder="Brume Rose 100 ml" /></label>
+      <div class="row">
+        <label>Caisses / couche <input id="skuPerLayer" type="number" inputmode="numeric" value="20" /></label>
+        <label>Nb couches <input id="skuLayers" type="number" inputmode="numeric" value="7" /></label>
+      </div>
+      <button id="saveSku" class="primary">Enregistrer le SKU</button>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
