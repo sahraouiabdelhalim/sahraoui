@@ -1,0 +1,29 @@
+# Déploiement Render : https://render.com → New → Blueprint → choisir ce dépôt.
+services:
+  - type: web
+    name: comptage-palettes
+    runtime: node
+    region: frankfurt        # hébergement en Europe (RGPD)
+    plan: starter            # requis pour le disque permanent
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1              # base + photos (~200 Ko/photo → ~5 000 palettes/Go)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: TZ
+        value: Europe/Paris  # fuseau de l'atelier (date du bilan, heures)
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false          # demandé à la création
+      - key: ACCESS_CODE
+        sync: false          # code opérateurs
+      - key: ADMIN_CODE
+        sync: false          # code responsable

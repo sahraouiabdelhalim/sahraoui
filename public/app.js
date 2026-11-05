@@ -12,10 +12,42 @@ function toast(msg) {
 }
 async function api(url, opts = {}) {
   const res = await fetch(url, { headers: { "Content-Type": "application/json" }, ...opts });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && url !== "/api/login") {
+    showLogin();
+    throw new Error("Connexion requise");
+  }
   if (!res.ok) throw new Error(data.error || "Erreur serveur");
   return data;
 }
+
+function showTab(name) {
+  document.querySelectorAll("nav button, .tab").forEach((el) => el.classList.remove("active"));
+  const btn = document.querySelector(`nav button[data-tab="${name}"]`);
+  if (btn) btn.classList.add("active");
+  $(name).classList.add("active");
+}
+function showLogin() {
+  $("nav").hidden = true;
+  $("logout").hidden = true;
+  showTab("login");
+  $("code").focus();
+}
+$("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("loginError").textContent = "";
+  try {
+    await api("/api/login", { method: "POST", body: JSON.stringify({ code: $("code").value }) });
+    $("code").value = "";
+    await start();
+  } catch (err) {
+    $("loginError").textContent = err.message;
+  }
+});
+$("logout").addEventListener("click", async () => {
+  await api("/api/logout", { method: "POST" });
+  showLogin();
+});
 const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const remember = (id) => {
   try { $(id).value = localStorage.getItem(id) || ""; } catch {}
@@ -44,9 +76,7 @@ function resizeImage(file, max = 1568) {
 // ---------- Onglets ----------
 document.querySelectorAll("nav button").forEach((b) =>
   b.addEventListener("click", () => {
-    document.querySelectorAll("nav button, .tab").forEach((el) => el.classList.remove("active"));
-    b.classList.add("active");
-    $(b.dataset.tab).classList.add("active");
+    showTab(b.dataset.tab);
     if (b.dataset.tab === "bilan") loadReport();
   })
 );
@@ -54,6 +84,10 @@ document.querySelectorAll("nav button").forEach((b) =>
 // ---------- Config ----------
 async function loadConfig() {
   config = await api("/api/config");
+  document.body.classList.toggle("admin", config.role === "admin");
+  $("tabReglages").classList.add("admin-only");
+  $("logout").hidden = config.open;
+  $("nav").hidden = false;
   const active = config.skus.filter((s) => s.active);
   const current = $("sku").value || (() => { try { return localStorage.getItem("sku"); } catch { return null; } })();
   $("sku").innerHTML = active.map((s) => `<option value="${escapeHtml(s.code)}">${escapeHtml(s.code)} – ${escapeHtml(s.name)}</option>`).join("");
@@ -176,7 +210,7 @@ async function loadReport() {
       <div class="grow"><b>N°${p.number}</b> · ${escapeHtml(p.skuCode)} · <b>${p.cases}</b> caisses
         ${p.corrected ? `<span class="tag">corrigé (IA : ${p.aiCases})</span>` : ""}<br>
         <small>${new Date(p.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${escapeHtml(p.operator || "—")} ${p.line ? "· " + escapeHtml(p.line) : ""} ${p.lot ? "· lot " + escapeHtml(p.lot) : ""}</small></div>
-      <button data-delpal="${p.id}">Suppr.</button></li>`)
+      <button data-delpal="${p.id}" class="admin-only">Suppr.</button></li>`)
     .join("");
 }
 $("date").addEventListener("change", loadReport);
@@ -220,6 +254,11 @@ $("skuList").addEventListener("click", async (e) => {
 });
 
 // ---------- Démarrage ----------
+async function start() {
+  await loadConfig();
+  showTab("saisie");
+}
+
 remember("operator");
 remember("line");
-loadConfig().catch((e) => toast(e.message));
+start().catch((e) => { if (e.message !== "Connexion requise") toast(e.message); });

@@ -13,7 +13,10 @@ h1 { font-size: 1.15rem; margin: 0; }
 h2 { font-size: 1.05rem; margin: 0 0 8px; }
 h3 { font-size: .95rem; margin: 16px 0 8px; }
 .badge { font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: rgba(255,255,255,.2); }
+.badge:empty { display: none; }
 .badge.demo { background: #f79009; }
+.logout { margin-left: 6px; padding: 4px 10px; font-size: .8rem; background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
+body:not(.admin) .admin-only { display: none !important; }
 nav { display: flex; position: sticky; top: 0; z-index: 2; background: var(--card); border-bottom: 1px solid var(--line); }
 nav button { flex: 1; padding: 12px 4px; border: 0; background: none; color: var(--muted); font-size: .95rem; border-bottom: 3px solid transparent; }
 nav button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }

@@ -10,17 +10,34 @@
 <body>
   <header>
     <h1>Comptage Palettes</h1>
-    <span id="mode" class="badge"></span>
+    <span>
+      <span id="mode" class="badge"></span>
+      <button id="logout" class="logout" hidden>Quitter</button>
+    </span>
   </header>
 
-  <nav>
+  <!-- ===== Connexion ===== -->
+  <main id="login" class="tab">
+    <section class="card">
+      <h2>Connexion</h2>
+      <form id="loginForm">
+        <label>Code d'accès
+          <input id="code" type="password" inputmode="numeric" autocomplete="current-password" required />
+        </label>
+        <button class="primary" type="submit">Entrer</button>
+      </form>
+      <p id="loginError" class="status conf-faible"></p>
+    </section>
+  </main>
+
+  <nav id="nav" hidden>
     <button data-tab="saisie" class="active">📷 Palette</button>
     <button data-tab="bilan">📊 Bilan</button>
-    <button data-tab="reglages">⚙️ Réglages</button>
+    <button data-tab="reglages" id="tabReglages">⚙️ Réglages</button>
   </nav>
 
   <!-- ===== Saisie palette ===== -->
-  <main id="saisie" class="tab active">
+  <main id="saisie" class="tab">
     <section class="card">
       <label>SKU <select id="sku"></select></label>
       <div class="row">

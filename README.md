@@ -11,7 +11,31 @@ Application web (mobile) pour fiabiliser le comptage des caisses produites par S
    Chaque correction est tracée (écart IA / opérateur).
 4. **Bilan du jour** : caisses, palettes pleines/partielles par SKU, photos de preuve, export CSV pour Excel.
 
-## Installation sur le PC de l'atelier (Windows)
+## Mise en ligne sur Render (recommandé)
+
+L'appli est accessible depuis n'importe quel téléphone (Wi-Fi ou 4G), en HTTPS, sans PC dans l'atelier.
+
+1. Créer un compte sur https://render.com (connexion avec GitHub) et ajouter un moyen de paiement.
+2. **New → Blueprint** → choisir le dépôt `sahraoui` → Render lit `render.yaml`.
+3. Renseigner les 3 valeurs demandées :
+   - `ANTHROPIC_API_KEY` : clé API (console.anthropic.com)
+   - `ACCESS_CODE` : code des opérateurs (ex. 6 chiffres)
+   - `ADMIN_CODE` : code du responsable (différent, plus long)
+4. **Apply**. Après 2–3 min, l'adresse s'affiche (ex. `https://comptage-palettes.onrender.com`).
+5. Sur chaque téléphone : ouvrir l'adresse → saisir le code → menu du navigateur → **Ajouter à l'écran d'accueil**.
+
+**Droits**
+- Code opérateur : saisie des palettes, consultation du bilan, export.
+- Code responsable : en plus, onglet Réglages (SKU, palette pleine) et suppression de palettes.
+
+**Exploitation**
+- Fuseau horaire : `TZ` dans `render.yaml` (par défaut `Europe/Paris`) – à adapter au pays de l'atelier (ex. `Africa/Algiers`, `Africa/Casablanca`, `Africa/Tunis`).
+- Changer un code : Render → service → Environment → modifier → Save (redémarrage automatique). Les téléphones devront ressaisir le code.
+- Sauvegarde : Render fait des instantanés automatiques du disque (voir Render → Disks). Exporter aussi le bilan CSV chaque jour.
+- Chaque mise à jour fusionnée sur `main` est redéployée automatiquement.
+- Coût indicatif : offre Starter (~7 $/mois) + disque 1 Go (~0,25 $/mois) + IA à la photo.
+
+## Variante : installation sur un PC de l'atelier (Windows)
 
 1. Installer **Node.js LTS** (version 22 ou plus) : https://nodejs.org → bouton « LTS » → installer avec les options par défaut.
 2. Télécharger l'appli : sur GitHub, bouton **Code → Download ZIP**, puis extraire dans `C:\ComptagePalettes`.
